@@ -11,43 +11,63 @@ namespace Snake
     {
         public static ConsoleKeyInfo keyPressed;
         public static bool runGame = true;
+        public static int time = 0;
 
         static void Main()
         {            
             string[] game =
             {
-                "+++++++++++++++++++++++",
-                "+                     +",
-                "+                     +",
-                "+                     +",
-                "+                     +",
-                "+                     +",
-                "+                     +",
-                "+                     +",
-                "+                     +",
-                "+                     +",
-                "+                     +",
-                "+                     +",
-                "+++++++++++++++++++++++"
+                "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++",
+                "+                                                                                    +",
+                "+                                                                                    +",
+                "+                                                                                    +",
+                "+                                                                                    +",
+                "+                                                                                    +",
+                "+                                                                                    +",
+                "+                                                                                    +",
+                "+                                                                                    +",
+                "+                                                                                    +",
+                "+                                                                                    +",
+                "+                                                                                    +",
+                "+                                                                                    +",
+                "+                                                                                    +",
+                "+                                                                                    +",
+                "+                                                                                    +",
+                "+                                                                                    +",
+                "+                                                                                    +",
+                "+                                                                                    +",
+                "+                                                                                    +",
+                "+                                                                                    +",
+                "+                                                                                    +",
+                "+                                                                                    +",
+                "+                                                                                    +",
+                "+                                                                                    +",
+                "+                                                                                    +",
+                "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
             };
-            char[] lineToEdit = game[3].ToCharArray();
-            int x = 11;
-            int y = 6;
+            char[] snakeLine = game[3].ToCharArray();
+            char[] fruitLine = game[3].ToCharArray();
+            int x = 11, y = 6;
+            int fruitX = 2, fruitY = 5;
+            int speedBase = 100;
+            int score = 0;
             string direction = "";
+
+            Random rand = new Random();
+
             Thread getKeyThread = new Thread(GetKey);
             getKeyThread.Start();
+
+            Thread timer = new Thread(Timer);
+            timer.Start();
+
+            fruitLine = game[fruitY].ToCharArray();
+            fruitLine[fruitX] = 'F';
+            game[fruitY] = new string(fruitLine);
+
             while (runGame == true)
-            {
-                foreach (string line in game)
-                {
-                    Console.WriteLine(line);
-                }
-
-                Thread.Sleep(75);
-
-                lineToEdit[x] = ' ';
-                game[y] = new string(lineToEdit);
-
+            {       
+                //TRANSLATING THE KEY INPUT                
                 if (keyPressed.Key == ConsoleKey.UpArrow || keyPressed.Key == ConsoleKey.W)
                 {
                     direction = "Up";
@@ -65,6 +85,7 @@ namespace Snake
                     direction = "Right";
                 }
 
+                //ACTING ON THE KEY INPUT
                 switch (direction)
                 {
                     case "Up":
@@ -74,21 +95,47 @@ namespace Snake
                         y++;
                         break;
                     case "Left":
-                        x -= 2;
+                        x --;
                         break;
                     case "Right":
-                        x += 2;
+                        x ++;
                         break;
                 }
 
+                //MAKING SURE SNAKE ISN'T OUT OF BOUNDS
                 x = Limit(x, 1, game[0].Length - 2);
                 y = Limit(y, 1, game.Length - 2);
 
-                lineToEdit = game[y].ToCharArray();
-                lineToEdit[x] = 's';
-                game[y] = new string(lineToEdit);
+                //PUTTING AN 's' IN SNAKES SPOT
+                snakeLine = game[y].ToCharArray();
+                snakeLine[x] = 'S';
+                game[y] = new string(snakeLine);
 
+                //ACTING WHEN SNAKE IS ON FRUIT
+                if (x == fruitX && y == fruitY)
+                {
+                    score++;
+
+                    fruitX = rand.Next(1, game[0].Length - 1);
+                    fruitY = rand.Next(1, game.Length - 1);
+                    
+                    fruitLine = game[fruitY].ToCharArray();
+                    fruitLine[fruitX] = 'F';
+                    game[fruitY] = new string(fruitLine);
+                }
+
+                //WRITING THE GAME BOARD
                 Console.Clear();
+                Console.WriteLine($"Score: {score}".PadRight(game[0].Length - 9) + $"Time: " + Convert.ToString(time).PadLeft(3, '0'));
+                foreach (string line in game)
+                {
+                    Console.WriteLine(line);
+                }
+
+                //BLANKING THE SNAKES SPOT
+                Thread.Sleep(speedBase - score);
+                snakeLine[x] = ' ';
+                game[y] = new string(snakeLine);
             }
         }
 
@@ -102,6 +149,15 @@ namespace Snake
                     runGame = false;
                 }
             }
+        }
+
+        static void Timer()
+        {
+            while (runGame == true)
+            {
+                Thread.Sleep(1000);
+                time++;
+            }            
         }
 
         static int Limit (int number, int min, int max)
