@@ -106,7 +106,7 @@ namespace Snake
                 x = Limit(x, 1, game[0].Length - 2);
                 y = Limit(y, 1, game.Length - 2);
 
-                //PUTTING AN 's' IN SNAKES SPOT
+                //PUTTING AN 'S' IN SNAKES SPOT
                 snakeLine = game[y].ToCharArray();
                 snakeLine[x] = 'S';
                 game[y] = new string(snakeLine);
