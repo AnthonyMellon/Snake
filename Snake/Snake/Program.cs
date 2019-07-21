@@ -11,10 +11,10 @@ namespace Snake
     {
         public static ConsoleKeyInfo keyPressed;
         public static bool runGame = true;
-        public static int time = 0;
+        public static int time = 0;               
 
         static void Main()
-        {            
+        {
             string[] game =
             {
                 "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++",
@@ -51,13 +51,12 @@ namespace Snake
             int fruitX = 2, fruitY = 5;
             int speedBase = 100;
             int score = 0;
-            string direction = "";
+            string direction = "";            
 
             Random rand = new Random();
 
             Thread getKeyThread = new Thread(GetKey);
             getKeyThread.Start();
-
             Thread timer = new Thread(Timer);
             timer.Start();
 
@@ -124,16 +123,16 @@ namespace Snake
                     game[fruitY] = new string(fruitLine);
                 }
 
-                //WRITING THE GAME BOARD
+                //WRITING THE GAME BOARD  
+                Thread.Sleep(speedBase - score);
                 Console.Clear();
                 Console.WriteLine($"Score: {score}".PadRight(game[0].Length - 9) + $"Time: " + Convert.ToString(time).PadLeft(3, '0'));
                 foreach (string line in game)
                 {
-                    Console.WriteLine(line);
+                    Console.WriteLine(line);                    
                 }
 
-                //BLANKING THE SNAKES SPOT
-                Thread.Sleep(speedBase - score);
+                //BLANKING THE SNAKES SPOT                
                 snakeLine[x] = ' ';
                 game[y] = new string(snakeLine);
             }
@@ -141,6 +140,7 @@ namespace Snake
 
         static void GetKey()
         {
+
             while (runGame == true)
             {
                 keyPressed = Console.ReadKey(true);
